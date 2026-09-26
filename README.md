@@ -1,6 +1,6 @@
 # Parallel YCbCr Image Transmission over RF
 
-A research prototype for transmitting a 1024×1024 RGB image over three parallel RF channels by converting the image to YCbCr, applying 2×2 block-average downsampling, adding a security layer, packetizing the data, and transmitting Y, Cb, and Cr simultaneously.
+A research prototype for transmitting a 1024×1024 RGB image over three parallel RF channels by converting the image to YCbCr, applying 2×2 block-average downsampling to the Cb and Cr components (Y is kept at full resolution), adding a security layer, packetizing the data, and transmitting Y, Cb, and Cr simultaneously.
 
 ---
 
@@ -37,9 +37,9 @@ A research prototype for transmitting a 1024×1024 RGB image over three parallel
 
 This project investigates whether an image can be transmitted **faster through parallel RF communication** by separating its YCbCr components and transmitting them simultaneously over independent RF channels.
 
-The system takes a **1024×1024 RGB image**, converts it to **YCbCr**, and performs **2×2 block-average downsampling** independently on Y, Cb, and Cr.
+The system takes a **1024×1024 RGB image**, converts it to **YCbCr**, and performs **2×2 block-average downsampling** on the **Cb and Cr** components only. **Y is kept at full resolution.**
 
-Each component is reduced from:
+Each chroma component is reduced from:
 
 ```
 1024 × 1024
@@ -48,6 +48,8 @@ Each component is reduced from:
      ↓
 512 × 512
 ```
+
+while Y remains unchanged at 1024×1024.
 
 The three resulting components are then processed through a **security layer**, packetized, and transmitted simultaneously:
 
@@ -58,12 +60,12 @@ The three resulting components are then processed through a **security layer**, 
                        YCbCr
                           │
                           ▼
-                  2×2 Downsampling
+              2×2 Downsampling (Cb/Cr only)
                           │
                ┌──────────┼──────────┐
                ▼          ▼          ▼
                Y         Cb         Cr
-           512×512    512×512    512×512
+          1024×1024   512×512    512×512
                │          │          │
                └──────────┼──────────┘
                           ▼
@@ -137,7 +139,7 @@ The system is divided into five major layers:
 ```
 ┌─────────────────────────────────────┐
 │         1. IMAGE PROCESSING          │
-│   RGB → YCbCr → 2×2 Downsampling     │
+│ RGB → YCbCr → 2×2 Downsampling(Cb/Cr)│
 └───────────────────┬───────────────────┘
                     │
 ┌───────────────────▼───────────────────┐
@@ -178,8 +180,8 @@ The system is divided into five major layers:
 |---|---|---|
 | Input image | 1024×1024 RGB | Fixed experimental input |
 | Color space | YCbCr | Separates image information into three components |
-| Downsampling | 2×2 block average | Simple, deterministic, easy to implement in hardware/software |
-| Downsampled size | 512×512 per component | Each dimension is reduced by 2 |
+| Downsampling | 2×2 block average (Cb/Cr only) | Simple, deterministic, easy to implement in hardware/software |
+| Downsampled size | 512×512 for Cb and Cr; Y stays 1024×1024 | Chroma dimensions are reduced by 2; luma is preserved at full resolution |
 | RF architecture | 3 parallel channels | Core research objective |
 | Channel assignment | Y / Cb / Cr | One image component per RF path |
 | Security | Security layer before RF transmission | Protect transmitted image data |
@@ -223,45 +225,43 @@ the output pixel is:
 Output = (P1 + P2 + P3 + P4) / 4
 ```
 
-This operation is applied independently to **Y, Cb, and Cr**.
+This operation is applied only to the **chroma components, Cb and Cr**. **Y is not downsampled** and is transmitted at full resolution.
 
 Therefore:
 
 ```
-1024 × 1024
-     ↓
-2×2 average
-     ↓
-512 × 512
+Cb: 1024 × 1024 → 2×2 average → 512 × 512
+Cr: 1024 × 1024 → 2×2 average → 512 × 512
+Y:  1024 × 1024 → unchanged   → 1024 × 1024
 ```
 
-for each component.
-
-> **Note:** This is **not standard 4:2:0 chroma subsampling**, because Y is also downsampled.
+> **Note:** Because only Cb and Cr are downsampled while Y is preserved at full resolution, this matches **standard 4:2:0 chroma subsampling**.
 
 ---
 
 ## 6. Data Size
 
-Each downsampled component contains:
+Y is kept at full resolution, while Cb and Cr are downsampled:
 
 ```
-512 × 512 = 262,144 samples
+Y:  1024 × 1024 = 1,048,576 samples
+Cb:  512 ×  512 =   262,144 samples
+Cr:  512 ×  512 =   262,144 samples
 ```
 
 Assuming 8-bit samples:
 
 | Component | Size |
 |---|---|
-| Y | 262,144 bytes |
+| Y | 1,048,576 bytes |
 | Cb | 262,144 bytes |
 | Cr | 262,144 bytes |
-| **Total** | **786,432 bytes** |
+| **Total** | **1,572,864 bytes** |
 
 Approximately:
 
 ```
-768 KiB ≈ 0.786 MB
+1,536 KiB ≈ 1.573 MB
 ```
 
 The original raw RGB image contains:
@@ -270,7 +270,7 @@ The original raw RGB image contains:
 1024 × 1024 × 3 = 3,145,728 bytes ≈ 3.15 MB
 ```
 
-Therefore, the proposed image-processing stage reduces the raw pixel-data volume by approximately **75%**.
+Therefore, the proposed image-processing stage reduces the raw pixel-data volume by approximately **50%** — the expected result for standard 4:2:0-style chroma subsampling, since only two of the three components are downsampled and each is reduced to a quarter of its original size.
 
 ---
 
@@ -432,21 +432,23 @@ For hardware deployment, applicable WPC/DoT requirements must be checked for the
 The amount of data is known:
 
 ```
-Total data ≈ 6.29 million bits
+Total data ≈ 12.58 million bits
 ```
 
 But the final transmission time depends strongly on the effective application throughput.
 
-For a single component:
+Because Y is not downsampled, its channel carries more data than either chroma channel:
 
 ```
-512 × 512 × 8 = 2,097,152 bits
+Y:  1024 × 1024 × 8 = 8,388,608 bits
+Cb:  512 ×  512 × 8 = 2,097,152 bits
+Cr:  512 ×  512 × 8 = 2,097,152 bits
 ```
 
-For three components:
+For all three components combined:
 
 ```
-2,097,152 × 3 = 6,291,456 bits
+8,388,608 + 2,097,152 + 2,097,152 = 12,582,912 bits
 ```
 
 The ideal transmission time for the complete image over one sequential channel is:
@@ -461,37 +463,39 @@ For true parallel transmission:
 T_parallel ≈ max(T_Y, T_Cb, T_Cr)
 ```
 
-plus protocol, synchronization, retransmission, and other overhead. The actual improvement will therefore be measured experimentally.
+Because the Y channel carries roughly four times as much data as either chroma channel, **Y becomes the bottleneck** in the parallel case — the theoretical speedup is therefore *less* than a naive 3× and depends on how the channel data rates are allocated. This, plus protocol, synchronization, retransmission, and other overhead, means the actual improvement will be measured experimentally.
 
 ---
 
 ## 13. Example Theoretical Timing
 
-*For illustration only*, assuming an effective 100 kbps rate:
+*For illustration only*, assuming each channel has an effective 100 kbps rate:
 
 ### Sequential
 
 ```
-6,291,456 / 100,000 ≈ 62.9 seconds
+12,582,912 / 100,000 ≈ 125.8 seconds
 ```
 
 ### Parallel
 
-Each channel carries:
+Each channel carries a different amount of data:
 
 ```
-2,097,152 bits
+Y:  8,388,608 bits → 8,388,608 / 100,000 ≈ 83.9 seconds
+Cb: 2,097,152 bits → 2,097,152 / 100,000 ≈ 21.0 seconds
+Cr: 2,097,152 bits → 2,097,152 / 100,000 ≈ 21.0 seconds
 ```
 
-Therefore:
+Since the three channels run simultaneously, the overall parallel transmission time is set by the slowest (largest) channel:
 
 ```
-2,097,152 / 100,000 ≈ 21.0 seconds
+T_parallel ≈ max(83.9, 21.0, 21.0) ≈ 83.9 seconds
 ```
 
-**Ideal improvement ≈ 3×**
+**Ideal improvement ≈ 125.8 / 83.9 ≈ 1.5×**
 
-However, this is only a theoretical upper-bound-style calculation. Real performance will be affected by:
+This is noticeably lower than a naive 3× estimate, because Y is not downsampled and therefore dominates the parallel transmission time. This is only a theoretical upper-bound-style calculation, and real performance will be affected by:
 
 ```
 Packet overhead
@@ -734,7 +738,7 @@ while keeping the parallel RF architecture unchanged.
 
 2. **Three channels do not automatically provide 3× speed** — the theoretical maximum improvement assumes balanced channels and negligible overhead. Real performance depends on RF data rate, packet overhead, synchronization, packet loss, retransmissions, FEC, processing, and channel conditions.
 
-3. **Downsampling affects image quality** — the reduction from 1024×1024 to 512×512 introduces information loss. PSNR, SSIM, and visual comparison will quantify this effect.
+3. **Downsampling affects image quality** — reducing Cb and Cr from 1024×1024 to 512×512 (while Y stays at full resolution) introduces information loss in the chroma channels. PSNR, SSIM, and visual comparison will quantify this effect.
 
 4. **XOR is not the final security solution** — the XOR implementation is intended for the prototype architecture only and should not be treated as equivalent to modern authenticated encryption.
 
