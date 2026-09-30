@@ -1,0 +1,108 @@
+============================================================
+       16-QAM SIX-PARALLEL-STREAM RF TRANSMISSION REPORT
+============================================================
+
+1. INPUT BITSTREAM
+------------------------------------------------------------
+Source JSON: C:\Users\sahit\Projects\parallel-secure-ycbcr-rf-image-transmission\imageprocessing\output\ycbcr_bitstreams.json
+Number of streams: 6
+Total bits: 12,582,912 bits
+Total byte-equivalent: 1,572,864 bytes
+Total size: 1.500 MiB
+
+The supplied YCbCr JSON contains six equal streams.
+Y is divided into four 25% parts; Cb and Cr are each one stream.
+
+2. STREAM DIVISION
+------------------------------------------------------------
+Y1:
+  JSON field: Y_part1_bits
+  Bits: 2,097,152
+  Bytes equivalent: 262,144
+  Portion of total: 16.67%
+Y2:
+  JSON field: Y_part2_bits
+  Bits: 2,097,152
+  Bytes equivalent: 262,144
+  Portion of total: 16.67%
+Y3:
+  JSON field: Y_part3_bits
+  Bits: 2,097,152
+  Bytes equivalent: 262,144
+  Portion of total: 16.67%
+Y4:
+  JSON field: Y_part4_bits
+  Bits: 2,097,152
+  Bytes equivalent: 262,144
+  Portion of total: 16.67%
+Cb:
+  JSON field: Cb_bits
+  Bits: 2,097,152
+  Bytes equivalent: 262,144
+  Portion of total: 16.67%
+Cr:
+  JSON field: Cr_bits
+  Bits: 2,097,152
+  Bytes equivalent: 262,144
+  Portion of total: 16.67%
+
+3. 16-QAM
+------------------------------------------------------------
+16-QAM carries 4 bits per symbol.
+Therefore:
+  raw bit rate = symbol rate × 4
+
+4. CHANNEL / SYMBOL-RATE ASSUMPTION
+------------------------------------------------------------
+Channel bandwidth: 300 kHz per stream
+Raised-cosine roll-off: 0.35
+Assumed relationship:
+  symbol rate = bandwidth / (1 + roll-off)
+  symbol rate = 300,000 / (1 + 0.35)
+  symbol rate ≈ 222,222.2 baud
+
+5. DATA RATE
+------------------------------------------------------------
+For 16-QAM:
+  bit rate = symbol rate × 4
+  bit rate ≈ 888,888.9 bps
+  ≈ 888.89 kbps per stream
+
+Six-stream aggregate ≈ 5.333 Mbps raw.
+
+6. TRANSMISSION TIME
+------------------------------------------------------------
+Total data = 12,582,912 bits
+Six-stream aggregate raw rate = 5.333 Mbps
+Ideal time = total bits / aggregate bit rate
+Ideal transmission time ≈ 2.359 seconds
+
+This is an ideal PHY-rate estimate. Real payload throughput will
+be lower because of framing, synchronization, pilots, FEC,
+interleaving, implementation losses, and retransmissions.
+
+7. BIT-ERROR SIMULATION
+------------------------------------------------------------
+Configured BER: 0.001
+Configured BER percentage: 0.100%
+Model: each transmitted bit independently has the configured
+probability of being flipped.
+
+Important: there is no universal 'normal RF error rate'.
+BER depends on SNR, RF channel, interference, implementation,
+coding, synchronization, and receiver design.
+The configured BER is therefore an explicit simulation assumption.
+
+Total simulated bit errors: 12,635
+Measured BER after simulation: 0.00100414
+Measured BER percentage: 0.10041%
+
+8. OUTPUT FILES
+------------------------------------------------------------
+rf_transmission_report.txt
+rf_transmission_report.json
+rf_transmission_error_bitstreams.json
+
+The error-bitstream JSON contains the same six stream names as
+the source JSON, but with simulated bit flips applied.
+============================================================

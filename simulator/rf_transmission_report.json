@@ -1,0 +1,192 @@
+{
+  "report": {
+    "generated_utc": "2026-09-30T21:33:28.586311+00:00",
+    "purpose": "16-QAM six-stream RF transmission calculation and BER simulation"
+  },
+  "input": {
+    "source_json": "C:\\Users\\sahit\\Projects\\parallel-secure-ycbcr-rf-image-transmission\\imageprocessing\\output\\ycbcr_bitstreams.json",
+    "input_image_assumption": "1024x1024 RGB source represented by the supplied YCbCr bitstreams",
+    "stream_count": 6,
+    "total_bits": 12582912,
+    "total_bytes_equivalent": 1572864,
+    "total_mib_equivalent": 1.5
+  },
+  "bitstream_division": {
+    "Y1": {
+      "json_field": "Y_part1_bits",
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "percentage_of_total": 16.666666666666668
+    },
+    "Y2": {
+      "json_field": "Y_part2_bits",
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "percentage_of_total": 16.666666666666668
+    },
+    "Y3": {
+      "json_field": "Y_part3_bits",
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "percentage_of_total": 16.666666666666668
+    },
+    "Y4": {
+      "json_field": "Y_part4_bits",
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "percentage_of_total": 16.666666666666668
+    },
+    "Cb": {
+      "json_field": "Cb_bits",
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "percentage_of_total": 16.666666666666668
+    },
+    "Cr": {
+      "json_field": "Cr_bits",
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "percentage_of_total": 16.666666666666668
+    }
+  },
+  "modulation": {
+    "name": "16-QAM",
+    "bits_per_symbol": 4,
+    "formula": "raw_bit_rate = symbol_rate \u00d7 bits_per_symbol"
+  },
+  "channel_model": {
+    "channel_bandwidth_hz": 300000,
+    "channel_bandwidth_khz": 300.0,
+    "roll_off": 0.35,
+    "symbol_rate_formula": "symbol_rate = bandwidth / (1 + roll_off)",
+    "estimated_symbol_rate_baud": 222222.22222222222,
+    "estimated_symbol_rate_ksps": 222.22222222222223,
+    "raw_bit_rate_formula": "bit_rate = symbol_rate \u00d7 4",
+    "estimated_raw_bit_rate_bps_per_stream": 888888.8888888889,
+    "estimated_raw_bit_rate_kbps_per_stream": 888.8888888888889,
+    "estimated_six_stream_aggregate_bps": 5333333.333333333,
+    "estimated_six_stream_aggregate_mbps": 5.333333333333333,
+    "ideal_transmission_time_seconds": 2.359296
+  },
+  "frequency_plan": {
+    "Y1": {
+      "start_mhz": 865.0,
+      "end_mhz": 865.3,
+      "center_mhz": 865.15
+    },
+    "Y2": {
+      "start_mhz": 865.4,
+      "end_mhz": 865.7,
+      "center_mhz": 865.55
+    },
+    "Y3": {
+      "start_mhz": 865.8,
+      "end_mhz": 866.1,
+      "center_mhz": 865.95
+    },
+    "Y4": {
+      "start_mhz": 866.2,
+      "end_mhz": 866.5,
+      "center_mhz": 866.35
+    },
+    "Cb": {
+      "start_mhz": 866.6,
+      "end_mhz": 866.9,
+      "center_mhz": 866.75
+    },
+    "Cr": {
+      "start_mhz": 867.0,
+      "end_mhz": 867.3,
+      "center_mhz": 867.15
+    }
+  },
+  "error_simulation": {
+    "model": "independent random bit flips",
+    "configured_ber": 0.001,
+    "note": "BER is a configurable simulation assumption; there is no single universal normal RF BER.",
+    "random_seed": 20261001,
+    "total_simulated_errors": 12635,
+    "measured_ber": 0.0010041395823160808,
+    "error_formula": "BER = number_of_wrong_bits / total_transmitted_bits"
+  },
+  "per_stream": {
+    "Y1": {
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "frequency_start_mhz": 865.0,
+      "frequency_end_mhz": 865.3,
+      "channel_bandwidth_khz": 300.0,
+      "modulation": "16-QAM",
+      "bits_per_symbol": 4,
+      "estimated_symbol_rate_ksps": 222.22222222222223,
+      "estimated_raw_bit_rate_kbps": 888.8888888888889,
+      "simulated_bit_errors": 2125,
+      "simulated_ber": 0.0010132789611816406
+    },
+    "Y2": {
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "frequency_start_mhz": 865.4,
+      "frequency_end_mhz": 865.7,
+      "channel_bandwidth_khz": 300.0,
+      "modulation": "16-QAM",
+      "bits_per_symbol": 4,
+      "estimated_symbol_rate_ksps": 222.22222222222223,
+      "estimated_raw_bit_rate_kbps": 888.8888888888889,
+      "simulated_bit_errors": 2098,
+      "simulated_ber": 0.0010004043579101562
+    },
+    "Y3": {
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "frequency_start_mhz": 865.8,
+      "frequency_end_mhz": 866.1,
+      "channel_bandwidth_khz": 300.0,
+      "modulation": "16-QAM",
+      "bits_per_symbol": 4,
+      "estimated_symbol_rate_ksps": 222.22222222222223,
+      "estimated_raw_bit_rate_kbps": 888.8888888888889,
+      "simulated_bit_errors": 2137,
+      "simulated_ber": 0.0010190010070800781
+    },
+    "Y4": {
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "frequency_start_mhz": 866.2,
+      "frequency_end_mhz": 866.5,
+      "channel_bandwidth_khz": 300.0,
+      "modulation": "16-QAM",
+      "bits_per_symbol": 4,
+      "estimated_symbol_rate_ksps": 222.22222222222223,
+      "estimated_raw_bit_rate_kbps": 888.8888888888889,
+      "simulated_bit_errors": 2075,
+      "simulated_ber": 0.0009894371032714844
+    },
+    "Cb": {
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "frequency_start_mhz": 866.6,
+      "frequency_end_mhz": 866.9,
+      "channel_bandwidth_khz": 300.0,
+      "modulation": "16-QAM",
+      "bits_per_symbol": 4,
+      "estimated_symbol_rate_ksps": 222.22222222222223,
+      "estimated_raw_bit_rate_kbps": 888.8888888888889,
+      "simulated_bit_errors": 2122,
+      "simulated_ber": 0.0010118484497070312
+    },
+    "Cr": {
+      "bits": 2097152,
+      "bytes_equivalent": 262144,
+      "frequency_start_mhz": 867.0,
+      "frequency_end_mhz": 867.3,
+      "channel_bandwidth_khz": 300.0,
+      "modulation": "16-QAM",
+      "bits_per_symbol": 4,
+      "estimated_symbol_rate_ksps": 222.22222222222223,
+      "estimated_raw_bit_rate_kbps": 888.8888888888889,
+      "simulated_bit_errors": 2078,
+      "simulated_ber": 0.0009908676147460938
+    }
+  }
+}
