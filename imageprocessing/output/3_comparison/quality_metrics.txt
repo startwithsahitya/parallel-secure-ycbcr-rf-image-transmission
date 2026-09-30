@@ -1,0 +1,10 @@
+YCbCr 4:2:0 Reconstruction Quality
+=================================
+
+Original resolution      : 1024 x 1024
+Reconstructed resolution : 1024 x 1024
+MSE                     : 0.344302
+PSNR                    : 52.7614 dB
+
+MSE: mean squared pixel error between original and reconstructed RGB.
+PSNR: peak signal-to-noise ratio calculated from MSE.
